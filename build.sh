@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 : "${BTCPAYGEN_DOCKER_IMAGE:=btcpayserver/docker-compose-generator}"
 if [ "$BTCPAYGEN_DOCKER_IMAGE" == "btcpayserver/docker-compose-generator:local" ]
@@ -8,7 +8,11 @@ then
     docker build docker-compose-generator -f docker-compose-generator/linuxamd64.Dockerfile --tag $BTCPAYGEN_DOCKER_IMAGE
 else
     set +e
-    docker pull $BTCPAYGEN_DOCKER_IMAGE
+
+    if  docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BTCPAYGEN_DOCKER_IMAGE"; then
+        docker pull "$BTCPAYGEN_DOCKER_IMAGE"
+    fi
+
     docker rmi $(docker images btcpayserver/docker-compose-generator --format "{{.Tag}};{{.ID}}" | grep "^<none>" | cut -f2 -d ';') > /dev/null 2>&1
     set -e
 fi
