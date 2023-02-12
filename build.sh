@@ -9,7 +9,7 @@ then
 else
     set +e
 
-    if  docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BTCPAYGEN_DOCKER_IMAGE"; then
+    if ! docker image list --format "{{.Repository}}:{{.Tag}}" | grep -q "$BTCPAYGEN_DOCKER_IMAGE"; then
         docker pull "$BTCPAYGEN_DOCKER_IMAGE"
     fi
 
